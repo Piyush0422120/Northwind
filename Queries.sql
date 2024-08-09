@@ -5,7 +5,7 @@ USE Northwind;
 -- Customers who placed most numbers of orders (Top 10)
 
 SELECT customers.customerid, 
-	   customername,
+       customername,
        COUNT(Orderid) AS Total_orders
 FROM Customers
 LEFT JOIN orders
@@ -33,8 +33,8 @@ LIMIT 10;
 
 SELECT customers.country, 
        COUNT(Orderid) AS Total_orders,
-	   ROUND(COUNT(Orderid)/(SELECT COUNT(Orderid)
-							 FROM orders)*100,3) AS Contribution_in_total_orders_percent
+       ROUND(COUNT(Orderid)/(SELECT COUNT(Orderid)
+			     FROM orders)*100,3) AS Contribution_in_total_orders_percent
 FROM Customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -46,10 +46,10 @@ ORDER BY Total_orders DESC;
 -- Contribution in total orders by shippers
 
 SELECT shippers.shipperid,
-	   shippername,
+       shippername,
        COUNT(Orderid) AS number_of_orders,
        ROUND(COUNT(Orderid)/(SELECT COUNT(orderid)
-							 FROM orders)*100,2) AS contribution
+			     FROM orders)*100,2) AS contribution
 FROM orders
 INNER JOIN shippers
 ON orders.shipperid=shippers.shipperid
@@ -61,9 +61,9 @@ ORDER BY number_of_orders DESC;
 -- Contribution in total orders by months
 
 SELECT MONTHNAME(Orderdate) AS Month_name,
-	   COUNT(orderid) AS total_orders,
+       COUNT(orderid) AS total_orders,
        ROUND(COUNT(Orderid)/(SELECT COUNT(orderid)
-							 FROM orders)*100,2) AS contribution
+			     FROM orders)*100,2) AS contribution
 FROM orders
 GROUP BY MONTH(Orderdate), MONTHNAME(Orderdate)
 ORDER BY MONTH(Orderdate);
@@ -73,9 +73,9 @@ ORDER BY MONTH(Orderdate);
 -- Contribution in total orders by years
 
 SELECT YEAR(Orderdate) AS Year_,
-	   COUNT(orderid) AS total_orders,
+       COUNT(orderid) AS total_orders,
        ROUND(COUNT(Orderid)/(SELECT COUNT(orderid)
-							 FROM orders)*100,2) AS contribution
+			     FROM orders)*100,2) AS contribution
 FROM orders
 GROUP BY Year_
 ORDER BY Year_;
@@ -85,10 +85,10 @@ ORDER BY Year_;
 -- Contribution in total orders by employees
 
 SELECT employees.employeeid,
-	   CONCAT(firstname,' ',lastname) AS full_name,
+       CONCAT(firstname,' ',lastname) AS full_name,
        COUNT(orderid) AS total_orders,
        ROUND(COUNT(Orderid)/(SELECT COUNT(orderid)
-							 FROM orders)*100,2) AS contribution
+			     FROM orders)*100,2) AS contribution
 FROM employees
 INNER JOIN orders
 ON employees.employeeid=orders.employeeid
@@ -100,8 +100,8 @@ ORDER BY total_orders DESC;
 -- Total sales and Average order Value
 
 SELECT SUM( price* quantity) AS total_sales,
-	   COUNT(DISTINCT Orders.orderid) AS total_orders,
-	   ROUND(SUM( price* quantity)/ COUNT(DISTINCT Orders.orderid),2) AS Average_order_value
+       COUNT(DISTINCT Orders.orderid) AS total_orders,
+       ROUND(SUM( price* quantity)/ COUNT(DISTINCT Orders.orderid),2) AS Average_order_value
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -124,10 +124,10 @@ ON orderdetails.productid=products.productid;
 -- Top 10 customers according to sales (and their contribution)
 
   SELECT customers.customerid,
-		 customername,
+	 customername,
          SUM(quantity*price) AS sales,
          ROUND(SUM(quantity*price)/(SELECT sales
-									FROM total_sales)*100,2) AS contribution_in_percent
+				    FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -146,7 +146,7 @@ LIMIT 10;
   SELECT city,
          SUM(quantity*price) AS sales,
          COUNT(DISTINCT Orders.orderid) AS total_orders,
-		 ROUND(SUM(quantity*price)/ COUNT(DISTINCT orders.orderid),2) AS avg_order_value
+	       ROUND(SUM(quantity*price)/ COUNT(DISTINCT orders.orderid),2) AS avg_order_value
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -164,7 +164,7 @@ ORDER BY avg_order_value DESC;
   SELECT city,
          SUM(quantity*price) AS sales,
          ROUND(SUM(quantity*price)/(SELECT sales
-							        FROM total_sales)*100,2) AS contribution_in_percent
+				    FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -185,7 +185,7 @@ LIMIT 10;
          COUNT(DISTINCT orders.orderid) AS total_orders,
          ROUND(SUM(quantity*price)/ COUNT( DISTINCT orders.orderid),2) AS avg_order_value,
          ROUND(SUM(quantity*price)/(SELECT sales
-							        FROM total_sales)*100,2) AS contribution_in_percent
+				    FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -204,7 +204,7 @@ ORDER BY sales DESC;
          productname,
          SUM(quantity*price) AS sales,
          ROUND(SUM(quantity*price)/(SELECT sales
-									FROM total_sales)*100,2) AS contribution_in_percent
+				    FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -223,7 +223,7 @@ ORDER BY sales DESC;
          categoryname,
          SUM(quantity*price) AS sales,
          ROUND(SUM(quantity*price)/(SELECT sales
-							        FROM total_sales)*100,2) AS contribution_in_percent
+				    FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -244,7 +244,7 @@ ORDER BY sales DESC;
          shippername,
          SUM(quantity*price) AS sales,
          ROUND(SUM(quantity*price)/(SELECT sales
-									FROM total_sales)*100,2) AS contribution_in_percent
+				    FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -265,7 +265,7 @@ ORDER BY sales DESC;
 		 MONTHNAME(orderdate) AS month_name,
          SUM(quantity*price) AS sales,
          ROUND(SUM(quantity*price)/(SELECT sales
-								    FROM total_sales)*100,2) AS contribution_in_percent
+				    FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 INNER JOIN orders
 ON customers.customerid=orders.customerid
@@ -283,7 +283,7 @@ ORDER BY month_number, month_name ;
 SELECT  YEAR(Orderdate) AS Year_,
 		SUM(quantity*price) AS sales,
 		ROUND(SUM(quantity*price)/(SELECT sales
-								   FROM total_sales)*100,2) AS contribution_in_percent
+					   FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 INNER JOIN orders
 ON customers.customerid=orders.customerid
@@ -299,12 +299,12 @@ ORDER BY Year_;
 -- Selecting employees according to sales (and their contribution) [Also includes average order value]
 
   SELECT employees.employeeid,
-		 CONCAT(Firstname,' ',Lastname) AS full_name,
+	 CONCAT(Firstname,' ',Lastname) AS full_name,
          SUM(quantity*price) AS sales,
          COUNT(DISTINCT orders.Orderid) AS total_orders,
-		 ROUND(SUM(quantity*price)/ COUNT( DISTINCT orders.orderid),2) AS avg_order_value,
+	 ROUND(SUM(quantity*price)/ COUNT( DISTINCT orders.orderid),2) AS avg_order_value,
          ROUND(SUM(quantity*price)/(SELECT sales
-									FROM total_sales)*100,2) AS contribution_in_percent
+				    FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -322,7 +322,7 @@ ORDER BY sales DESC;
 -- Selecting customers according to city
 
 SELECT City,
-	   COUNT(customerid) AS total_customers
+       COUNT(customerid) AS total_customers
 FROM customers
 GROUP BY city
 ORDER BY total_customers DESC;
@@ -332,7 +332,7 @@ ORDER BY total_customers DESC;
 -- Selecting customers according to country
 
 SELECT Country,
-	   COUNT(customerid) AS total_customers
+       COUNT(customerid) AS total_customers
 FROM customers
 GROUP BY country
 ORDER BY total_customers DESC;
@@ -342,7 +342,7 @@ ORDER BY total_customers DESC;
 -- Selecting suppliers according to country
 
 SELECT Country,
-	   COUNT(supplierid) AS total_suppliers
+       COUNT(supplierid) AS total_suppliers
 FROM suppliers
 GROUP BY country
 ORDER BY total_suppliers DESC;
@@ -354,7 +354,7 @@ ORDER BY total_suppliers DESC;
 SELECT *
 FROM customers
 WHERE customers.customerid NOT IN (SELECT customerid
-								   FROM orders);
+				   FROM orders);
                                    
 -- DONE---------------------------------------------------
 
