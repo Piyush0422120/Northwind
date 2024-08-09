@@ -1,139 +1,132 @@
 # Northwind
-Objective: Analysis of a social media platform
+Objective: Analysis of Northwind Ltd. (A big multinational FMCG Company)
 
-Total number of Queries: 27  <br><br>
-![image](https://github.com/user-attachments/assets/3a64658a-ae1e-4189-bf4b-cbded223d4da)
+Total number of Queries: 22  <br><br>
+![image](https://github.com/user-attachments/assets/a3336fba-d72a-4e89-a696-1ec359e23f68)
 
 ---
 ## SNAPSHOTS  
 
 
-#1 Selecting posts on basis of number of likes   <BR>
+#1 Contribution in total orders by every country   <BR>
 
 ```
--- Query 2
--- Selecting posts on basis of number of likes 
+-- Query 3
+-- Contribution in total orders by every country
 
-SELECT users.user_id,
-       users.username,
-       post.caption, 
-       COUNT(post_likes.user_id) AS total_likes
-FROM users
-LEFT JOIN post
-ON users.user_id=post.user_id
-LEFT JOIN post_likes
-ON post.post_id=post_likes.post_id
-GROUP BY users.user_id,users.username, post.caption
-ORDER BY total_likes DESC;
+SELECT customers.country, 
+       COUNT(Orderid) AS Total_orders,
+       ROUND(COUNT(Orderid)/(SELECT COUNT(Orderid)
+                             FROM orders)*100,3) AS Contribution_in_total_orders_percent
+FROM Customers
+LEFT JOIN orders
+ON customers.customerid=orders.customerid
+GROUP BY  customers.country
+ORDER BY Total_orders DESC;
 ```
-![image](https://github.com/user-attachments/assets/2fff4d49-6d11-41bf-a557-6a5c41dc4b53)
+
+![image](https://github.com/user-attachments/assets/c4c43574-b16a-473f-b502-95e0632e4014)
 
 <BR>
 
-#2 Users with most combined likes on all posts  <BR>
+#2 Total sales and Average order Value  <BR>
 
 ```
-SELECT users.user_id,
-       username,
-       COUNT(DISTINCT post.post_id) AS total_posts,
-       COUNT(post_likes.user_id) AS total_likes,
-       COUNT(post_likes.user_id)/COUNT(DISTINCT post.post_id) AS avg_likes_per_post
-FROM users
-LEFT JOIN post
-ON users.user_id=post.user_id
-LEFT JOIN post_likes
-ON post.post_id=post_likes.post_id
-GROUP BY users.user_id,username
-ORDER BY total_likes DESC;
+SELECT SUM( price* quantity) AS total_sales,
+       COUNT(DISTINCT Orders.orderid) AS total_orders,
+       ROUND(SUM( price* quantity)/ COUNT(DISTINCT Orders.orderid),2) AS Average_order_value
+FROM customers
+LEFT JOIN orders
+ON customers.customerid=orders.customerid
+LEFT JOIN Orderdetails
+ON orders.orderid=Orderdetails.orderid
+LEFT JOIN products
+ON Orderdetails.productid=products.productid;
+
 ```
-![image](https://github.com/user-attachments/assets/d7160173-803f-47a8-8f53-b00cfa1ffa66)
+![image](https://github.com/user-attachments/assets/2f1bfb57-6202-4090-9173-16259526f983)
 
 <BR>
 
-#3 Users with No logins <BR>
+#3 Top 10 customers according to sales <BR>
 
 ```
 -- Query 9
--- Users with No logins (Inactive users check)
+-- Top 10 customers according to sales (and their contribution)
 
-SELECT user_id, username
-FROM users
-WHERE user_id NOT IN (SELECT user_id
-                      FROM login)
-ORDER BY user_id ASC;
+  SELECT customers.customerid,
+         customername,
+         SUM(quantity*price) AS sales,
+         ROUND(SUM(quantity*price)/(SELECT sales
+                                    FROM total_sales)*100,2) AS contribution_in_percent
+FROM customers
+LEFT JOIN orders
+ON customers.customerid=orders.customerid
+LEFT JOIN Orderdetails
+ON orders.orderid=Orderdetails.orderid
+LEFT JOIN products
+ON Orderdetails.productid=products.productid
+GROUP BY  customerid, customername
+ORDER BY sales DESC
+LIMIT 10;
 
 ```
-![image](https://github.com/user-attachments/assets/36b4a734-73ea-4fb0-9663-afcf711e2386)
+![image](https://github.com/user-attachments/assets/db9bb4f3-8864-4ab2-b4f7-0da155d85800)
 
 <BR>
 
-#4 Users who recievd most cummulative comments on posts <BR>
+#4 Selecting products according to sales (and their contribution)  <BR>
+
+```
+-- Query 13
+-- Selecting products according to sales (and their contribution) 
+
+  SELECT products.productid,
+         productname,
+         SUM(quantity*price) AS sales,
+         ROUND(SUM(quantity*price)/(SELECT sales
+                                    FROM total_sales)*100,2) AS contribution_in_percent
+FROM customers
+LEFT JOIN orders
+ON customers.customerid=orders.customerid
+LEFT JOIN Orderdetails
+ON orders.orderid=Orderdetails.orderid
+LEFT JOIN products
+ON Orderdetails.productid=products.productid
+GROUP BY  products.productid, productname
+ORDER BY sales DESC;
+```
+![image](https://github.com/user-attachments/assets/ddd0bfb3-14f4-46a5-9005-788adae14242)
+
+<BR>
+
+#5 Selecting categories according to sales (and their contribution) <BR>
 
 ```
 -- Query 14
--- Users who recievd most cummulative comments on posts
+-- Selecting categories according to sales (and their contribution)
 
-SELECT users.user_id,
-       username,
-       COUNT(Comments.post_id) AS total_comments_recieved,
-       COUNT(DISTINCT post.post_id) AS total_posts,
-       COUNT(Comments.post_id)/COUNT(DISTINCT post.post_id) AS avg_comments
-FROM Post
-LEFT JOIN comments
-ON post.post_id=comments.post_id
-INNER JOIN users
-ON users.user_id=post.user_id
-GROUP BY users.user_id, username
-ORDER BY total_comments_recieved DESC;
-
-```
-![image](https://github.com/user-attachments/assets/7cd9975c-d7ef-4cde-af8f-8f6fa8353e7e)
-
-<BR>
-
-#5 Selecting comments on basis of number of comment_likes <BR>
-
-```
--- Query 18
--- Selecting comments on basis of number of comment_likes
-
-SELECT users.user_id,
-       username,
-       comment_text,
-       COUNT(comment_likes.comment_id) AS total_comment_likes
-FROM comments
-LEFT JOIN users
-ON users.user_id=comments.user_id
-LEFT JOIN comment_likes
-ON comments.comment_id=comment_likes.comment_id
-GROUP BY users.user_id, username,comment_text
-ORDER BY total_comment_likes DESC;
+SELECT   categories.categoryid,
+         categoryname,
+         SUM(quantity*price) AS sales,
+         ROUND(SUM(quantity*price)/(SELECT sales
+                                    FROM total_sales)*100,2) AS contribution_in_percent
+FROM customers
+LEFT JOIN orders
+ON customers.customerid=orders.customerid
+LEFT JOIN Orderdetails
+ON orders.orderid=Orderdetails.orderid
+LEFT JOIN products
+ON Orderdetails.productid=products.productid
+LEFT JOIN categories
+ON products.categoryid=categories.categoryid
+GROUP BY categories.categoryid, categoryname
+ORDER BY sales DESC;
 ```
 
-![image](https://github.com/user-attachments/assets/3b2dad5b-5c46-4a15-93b7-1717c8d47313)
+![image](https://github.com/user-attachments/assets/65e74cd2-5076-4237-9475-bf6b147653fc)
 
-<BR>
 
-#6 Selecting users on basis of followers  <BR>
-
-```
--- Query 24
--- Selecting users on basis of followers
-
-SELECT  user_id,
-        username,
-        COUNT(followee_id) AS total_followers
-FROM users
-LEFT JOIN follows
-ON user_id=follower_id
-WHERE follower_id != followee_id
-GROUP BY user_id, username
-ORDER BY total_followers DESC;
-
-```
-![image](https://github.com/user-attachments/assets/58462382-eefa-4f16-8fd7-0d3f06a252d8)
-
-<BR>
 
 
 
