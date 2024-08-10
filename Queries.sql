@@ -146,7 +146,7 @@ LIMIT 10;
   SELECT city,
          SUM(quantity*price) AS sales,
          COUNT(DISTINCT Orders.orderid) AS total_orders,
-	       ROUND(SUM(quantity*price)/ COUNT(DISTINCT orders.orderid),2) AS avg_order_value
+	 ROUND(SUM(quantity*price)/ COUNT(DISTINCT orders.orderid),2) AS avg_order_value
 FROM customers
 LEFT JOIN orders
 ON customers.customerid=orders.customerid
@@ -262,7 +262,7 @@ ORDER BY sales DESC;
 -- Selecting  sales according to month
 
   SELECT MONTH(orderdate) AS month_number,
-		 MONTHNAME(orderdate) AS month_name,
+	 MONTHNAME(orderdate) AS month_name,
          SUM(quantity*price) AS sales,
          ROUND(SUM(quantity*price)/(SELECT sales
 				    FROM total_sales)*100,2) AS contribution_in_percent
@@ -281,9 +281,9 @@ ORDER BY month_number, month_name ;
 -- Selecting  sales according to Year
 
 SELECT  YEAR(Orderdate) AS Year_,
-		SUM(quantity*price) AS sales,
-		ROUND(SUM(quantity*price)/(SELECT sales
-					   FROM total_sales)*100,2) AS contribution_in_percent
+	SUM(quantity*price) AS sales,
+	ROUND(SUM(quantity*price)/(SELECT sales
+				   FROM total_sales)*100,2) AS contribution_in_percent
 FROM customers
 INNER JOIN orders
 ON customers.customerid=orders.customerid
