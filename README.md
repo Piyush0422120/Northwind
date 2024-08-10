@@ -1,5 +1,5 @@
 # Northwind
-Objective: Analysis of Northwind Ltd. performance (A big multinational FMCG Company)
+Objective: Analysis of Northwind Ltd. sales performance (A big multinational FMCG Company)
 
 Total number of Queries: 22  <br><br>
 ![image](https://github.com/user-attachments/assets/a3336fba-d72a-4e89-a696-1ec359e23f68)
